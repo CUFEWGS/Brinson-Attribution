@@ -114,8 +114,7 @@ class BrinsonAttribution:
         stock_weight_in_bm = stock_weight_in_bm.reindex(multi_index)
         stock_sector = stock_sector.reindex(multi_index)
         stock_ret = stock_ret.reindex(multi_index)
-        pd.concat
-        bm_sector_return = (stock_weight_in_bm.iloc[:, 0] * stock_ret.iloc[:, 0]) / stock_weight_in_bm.iloc[:, 0].sum()
+        pd.concat =         bm_sector_return = (stock_weight_in_bm.iloc[:, 0] * stock_ret.iloc[:, 0]) / stock_weight_in_bm.iloc[:, 0].sum()
         pass
 
 
