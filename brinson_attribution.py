@@ -374,7 +374,7 @@ def brinson_attribution():
     bond_benchmark = '000012.SH'   #基金对应基准债券指数代码
     stock_benchmark = '000300.SH'  #基金对应基准股票指数基准代码
     bm_stock_wt = 0.80             #基准股票指数比例
-    version = 2               #brinson归因模型版本 1--BHB; 2--BF
+    version = 1               #brinson归因模型版本 1--BHB; 2--BF
     freq = '6M'               #归因频率，与所选基金持仓频率对应，默认选择基金的半年报和年报
     verbose = True        #是否存储单层brinson归因结果（股票行业配置和选股效应）
 

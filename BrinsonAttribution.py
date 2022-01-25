@@ -6,15 +6,16 @@
 
 import pandas as pd
 
+
 class BrinsonAttribution:
 
     @staticmethod
-    def cal_sr(bm_weight, pf_sector_ret, bm_sector_ret):
+    def cal_sr(bm_sector_weight, pf_sector_ret, bm_sector_ret):
         """
 
         Parameters
         ----------
-        bm_weight
+        bm_sector_weight
         pf_sector_ret
         bm_sector_ret
 
@@ -22,7 +23,7 @@ class BrinsonAttribution:
         -------
         Examples
         -------
-        >>> bm_weight = pd.Series([0.1, 0.2, 0.3, 0.15, 0.05],
+        >>> bm_sector_weight = pd.Series([0.1, 0.2, 0.3, 0.15, 0.05],
         index=['a', 'b', 'c', 'd', 'e'])
         >>> pf_sector_ret = pd.Series([0.11, 0.19, 0.32, 0.14, 0.09],
         index=['a', 'b', 'c', 'd', 'e'])
@@ -30,20 +31,20 @@ class BrinsonAttribution:
         index=['a', 'b', 'c', 'd', 'e'])
         >>> bm_sector_ret = pd.Series([0.1, 0.2, 0.3, 0.15, 0.05],
         index=['aa', 'b', 'c', 'd', 'e'])
-        >>> BrinsonAttribution.cal_sr(bm_weight, pf_sector_ret, bm_sector_ret)
+        >>> BrinsonAttribution.cal_sr(bm_sector_weight, pf_sector_ret, bm_sector_ret)
         """
-        if not((bm_weight.index == pf_sector_ret.index).all() and (pf_sector_ret.index == bm_sector_ret.index).all()):
+        if not((bm_sector_weight.index == pf_sector_ret.index).all() and (pf_sector_ret.index == bm_sector_ret.index).all()):
             raise ValueError("Benchmark and portfolio must have the same index with value of sectors.")
-        sr = bm_weight * (pf_sector_ret - bm_sector_ret)
+        sr = bm_sector_weight * (pf_sector_ret - bm_sector_ret)
         return sr
 
     @staticmethod
-    def cal_sr_ir(pf_weight, pf_sector_ret, bm_sector_ret):
+    def cal_sr_ir(pf_sector_weight, pf_sector_ret, bm_sector_ret):
         """
 
         Parameters
         ----------
-        pf_weight
+        pf_sector_weight
         pf_sector_ret
         bm_sector_ret
 
@@ -61,28 +62,70 @@ class BrinsonAttribution:
         index=['aa', 'b', 'c', 'd', 'e'])
         >>> BrinsonAttribution.cal_sr(bm_weight, pf_sector_ret, bm_sector_ret)
         """
-        if not ((pf_weight.index == pf_sector_ret.index).all() and (pf_sector_ret.index == bm_sector_ret.index).all()):
+        pf_sector_ret = pf_sector_ret.reindex(bm_sector_ret.index).fillna(0)
+        if not ((pf_sector_weight.index == pf_sector_ret.index).all() and (pf_sector_ret.index == bm_sector_ret.index).all()):
             raise ValueError("Benchmark and portfolio must have the same index with value of sectors.")
-        sr_ir = pf_weight * (pf_sector_ret - bm_sector_ret)
+        sr_ir = pf_sector_weight * (pf_sector_ret - bm_sector_ret)
         return sr_ir
 
     @staticmethod
-    def cal_ar(pf_weight, bm_weight, bm_sector_ret, bm_index_ret=0):
-        if not ((pf_weight.index == bm_sector_ret.index).all and (bm_weight.index == bm_sector_ret.index).all()):
+    def cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret, bm_index_ret=0):
+        if not ((pf_sector_weight.index == bm_sector_ret.index).all and (bm_sector_weight.index == bm_sector_ret.index).all()):
             raise ValueError("Benchmark and portfolio must have the same index with value of sectors.")
-        ar = (pf_weight - bm_weight) * (bm_sector_ret - bm_index_ret)
+        ar = (pf_sector_weight - bm_sector_weight) * (bm_sector_ret - bm_index_ret)
         return ar
 
     @staticmethod
-    def cal_ir(pf_weight, bm_weight, pf_sector_ret, bm_sector_ret):
-        if not ((pf_weight.index == bm_sector_ret.index).all and (bm_weight.index == pf_sector_ret.index).all() and\
+    def cal_ir(pf_sector_weight, bm_sector_weight, pf_sector_ret, bm_sector_ret):
+        if not ((pf_sector_weight.index == bm_sector_ret.index).all and (bm_sector_weight.index == pf_sector_ret.index).all() and \
                 (pf_sector_ret.index == bm_sector_ret.index).all()):
             raise ValueError("Benchmark and portfolio must have the same index with value of sectors.")
-        ir = (pf_weight - bm_weight) * (pf_sector_ret - bm_sector_ret)
+        ir = (pf_sector_weight - bm_sector_weight) * (pf_sector_ret - bm_sector_ret)
         return ir
 
     @staticmethod
-    def cal_sector_ret(stock_ret, stock_weight_in_bm, stock_sector):
+    def cal_pf_sector_ret_weight(stock_ret, stock_weight_in_pf, stock_sector):
+        """
+
+        Parameters
+        ----------
+        stock_ret
+        stock_weight_in_pf
+        stock_sector
+
+        Returns
+        -------
+
+        Examples
+        -------
+        >>> import pandas as pd
+        >>> weight_dir = "D:/E/Python/Brinson-Attribution/fund_holding/161810.OF持股.csv"
+        >>> stock_weight_in_pf = pd.read_csv(weight_dir, encoding='utf-8')
+        >>> stock_weight_in_pf  = stock_weight_in_pf[['报告期', '品种代码',  '占股票市值比(%)']]
+        >>> stock_weight_in_pf  = stock_weight_in_pf[stock_weight_in_pf['报告期'] == '2017-12-31']
+        >>> stock_weight_in_pf = stock_weight_in_pf.drop('报告期', axis=1).set_index(['品种代码']).drop('合计')
+        >>> sector_dir = "D:/E/Python/Brinson-Attribution/quote_data/industry_zx.csv"
+        >>> stock_sector = pd.read_csv(sector_dir, encoding='gbk')[['Unnamed: 0', '2017/12/29']]
+        >>> stock_sector.set_index('Unnamed: 0', inplace=True)
+        >>> stock_ret = pd.read_csv("D:/E/Python/Brinson-Attribution/quote_data/pct_chg_6M.csv")[['Unnamed: 0', '2017/12/31']]
+        >>> stock_ret.set_index('Unnamed: 0', inplace=True)
+        """
+        stock_weight_in_pf = stock_weight_in_pf.dropna()
+        stock_sector = stock_sector.dropna()
+        stock_ret = stock_ret.dropna()
+        multi_index = stock_weight_in_pf.index.intersection(stock_sector.index).intersection(stock_ret.index)
+        stock_weight_in_pf = stock_weight_in_pf.reindex(multi_index)
+        stock_sector = stock_sector.reindex(multi_index)
+        stock_ret = stock_ret.reindex(multi_index)
+        weight_sector = pd.concat([stock_weight_in_pf, stock_sector], axis=1)
+        weight_sector.columns = ['weight', 'sector']
+        pf_sector_weight = (weight_sector.groupby('sector').sum() / weight_sector['weight'].sum())['weight']
+        pf_sector_return = weight_sector.groupby('sector').apply(
+            lambda x: ((x.loc[:, 'weight'] * stock_ret.iloc[:, 0]).dropna() / x['weight'].sum()).sum())
+        return pf_sector_return, pf_sector_weight
+
+    @staticmethod
+    def cal_bm_sector_ret_weight(stock_ret, stock_weight_in_bm, stock_sector):
         """
 
         Parameters
@@ -114,7 +157,122 @@ class BrinsonAttribution:
         stock_weight_in_bm = stock_weight_in_bm.reindex(multi_index)
         stock_sector = stock_sector.reindex(multi_index)
         stock_ret = stock_ret.reindex(multi_index)
-        pd.concat =         bm_sector_return = (stock_weight_in_bm.iloc[:, 0] * stock_ret.iloc[:, 0]) / stock_weight_in_bm.iloc[:, 0].sum()
-        pass
+        weight_sector = pd.concat([stock_weight_in_bm, stock_sector], axis=1)
+        weight_sector.columns = ['weight', 'sector']
+        bm_sector_weight = (weight_sector.groupby('sector').sum() / weight_sector['weight'].sum())['weight']
+        bm_sector_return = weight_sector.groupby('sector').apply(
+            lambda x: ((x.loc[:, 'weight'] * stock_ret.iloc[:, 0]).dropna() / x['weight'].sum()).sum())
+        return bm_sector_return, bm_sector_weight
+
+    @staticmethod
+    def cal_bm_whole_ret(bm_sector_ret, bm_sector_weight):
+        """
+
+        Parameters
+        ----------
+        bm_sector_ret
+        bm_sector_weight
+
+        Returns
+        -------
+
+        Examples
+        -------
+        >>> import pandas as pd
+        >>> weight_dir = "D:/E/Python/Brinson-Attribution/index_weight/000300.csv"
+        >>> stock_weight_in_bm = pd.read_csv(weight_dir, encoding='utf-8')
+        >>> stock_weight_in_bm  = stock_weight_in_bm[['Unnamed: 0', '2017-12-29']]
+        >>> stock_weight_in_bm.set_index('Unnamed: 0', inplace=True)
+        >>> sector_dir = "D:/E/Python/Brinson-Attribution/quote_data/industry_zx.csv"
+        >>> stock_sector = pd.read_csv(sector_dir, encoding='gbk')[['Unnamed: 0', '2017/12/29']]
+        >>> stock_sector.set_index('Unnamed: 0', inplace=True)
+        >>> stock_ret = pd.read_csv("D:/E/Python/Brinson-Attribution/quote_data/pct_chg_6M.csv")[['Unnamed: 0', '2017/12/31']]
+        >>> stock_ret.set_index('Unnamed: 0', inplace=True)
+        >>> bm_sector_ret, bm_sector_weight = BrinsonAttribution.cal_bm_sector_ret_weight(stock_ret, stock_weight_in_bm, stock_sector)
+        """
+        bm_whole_ret = (bm_sector_ret * bm_sector_weight).sum()
+        return bm_whole_ret
+
+    @staticmethod
+    def _attribute_by_stock_position(stock_ret, stock_weight_in_pf,  stock_weight_in_bm, stock_sector, model='BF',
+                                     ir_separated=True):
+        """
+
+        Parameters
+        ----------
+        stock_ret
+        stock_weight_in_pf
+        stock_weight_in_bm
+        stock_sector
+        model
+        ir_separated
+
+        Returns
+        -------
+
+        Examples
+        --------
+        >>> BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector)
+
+        """
+        pf_sector_ret, pf_sector_weight = BrinsonAttribution.cal_pf_sector_ret_weight(stock_ret, stock_weight_in_pf,
+                                                                                      stock_sector)
+        bm_sector_ret, bm_sector_weight = BrinsonAttribution.cal_bm_sector_ret_weight(stock_ret, stock_weight_in_bm,
+                                                                                      stock_sector)
+        pf_sector_weight = pf_sector_weight.reindex(bm_sector_weight.index).fillna(0)
+        pf_sector_ret = pf_sector_ret.reindex(bm_sector_ret.index).fillna(0)
+        bm_whole_ret = BrinsonAttribution.cal_bm_whole_ret(bm_sector_ret, bm_sector_weight)
+        if ir_separated:
+            sr = BrinsonAttribution.cal_sr(bm_sector_weight, pf_sector_ret, bm_sector_ret)
+            ir = BrinsonAttribution.cal_ir(pf_sector_weight, bm_sector_weight, pf_sector_ret, bm_sector_ret)
+            if model == "BF":
+                ar = BrinsonAttribution.cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret,
+                                               bm_index_ret=bm_whole_ret)
+            else:
+                ar = BrinsonAttribution.cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret)
+            return sr, ir, ar
+        else:
+            sr = BrinsonAttribution.cal_sr_ir(pf_sector_weight, pf_sector_ret, bm_sector_ret)
+            if model == "BF":
+                ar = BrinsonAttribution.cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret,
+                                               bm_index_ret=bm_whole_ret)
+            else:
+                ar = BrinsonAttribution.cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret)
+            return sr, ar
+
+    @staticmethod
+    def attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector, model='BF',
+                                    ir_separated=True):
+        """
+
+        Parameters
+        ----------
+        stock_ret
+        stock_weight_in_pf
+        stock_weight_in_bm
+        stock_sector
+        model
+        ir_separated
+
+        Returns
+        -------
+
+        Examples
+        --------
+        >>> BrinsonAttribution.attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector)
+
+        """
+        if ir_separated:
+            sr, ir, ar = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf,
+                                                                         stock_weight_in_bm, stock_sector, model=model,
+                                                                         ir_separated=ir_separated)
+            return {'sr': sr.sum(), 'ir': ir.sum(), 'ar': ar.sum()}
+        else:
+            sr, ar = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf,
+                                                                     stock_weight_in_bm, stock_sector, model=model,
+                                                                     ir_separated=ir_separated)
+            return {'sr': sr, 'ar': ar}
+
+
 
 
