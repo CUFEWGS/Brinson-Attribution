@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e4c164e6-896a-4816-97a8-0fa4934855ec" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BrinsonAttribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/BrinsonAttribution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/brinson_attribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/brinson_attribution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/brinson_result/161810.OF.csv" beforeDir="false" afterPath="$PROJECT_DIR$/brinson_result/161810.OF.csv" afterDir="false" />
@@ -17,13 +18,27 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/Brinson_Attribution$brinson_attribution.coverage" NAME="brinson_attribution Coverage Results" MODIFIED="1642056479318" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/brinson_attribution.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
-              <caret line="180" column="18" selection-start-line="180" selection-start-column="4" selection-end-line="180" selection-end-column="18" />
+            <state relative-caret-position="365">
+              <caret line="84" column="35" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="35" />
               <folding>
                 <element signature="e#82#91#0" expanded="true" />
               </folding>
@@ -34,8 +49,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/BrinsonAttribution.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="290">
-              <caret line="255" lean-forward="true" selection-start-line="255" selection-end-line="255" />
+            <state relative-caret-position="254">
+              <caret line="371" lean-forward="true" selection-start-line="371" selection-end-line="371" />
+              <folding>
+                <element signature="e#139#158#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -80,10 +98,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="3061" />
-    <option name="y" value="61" />
-    <option name="width" value="1615" />
-    <option name="height" value="735" />
+    <option name="x" value="-15" />
+    <option name="y" value="-15" />
+    <option name="width" value="3033" />
+    <option name="height" value="1933" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -97,11 +115,6 @@
             <path>
               <item name="Brinson-Attribution" type="b2602c69:ProjectViewProjectNode" />
               <item name="Brinson-Attribution" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Brinson-Attribution" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Brinson-Attribution" type="462c0819:PsiDirectoryNode" />
-              <item name="brinson_result_test" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Brinson-Attribution" type="b2602c69:ProjectViewProjectNode" />
@@ -188,6 +201,7 @@
       <workItem from="1642643549764" duration="12513000" />
       <workItem from="1642729690909" duration="6262000" />
       <workItem from="1643073394826" duration="12375000" />
+      <workItem from="1643250254082" duration="7797000" />
     </task>
     <task id="LOCAL-00001" summary="some change">
       <created>1642733426891</created>
@@ -221,14 +235,14 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="44929000" />
+    <option name="totallyTimeSpent" value="52726000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2992" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-6" y="-6" width="1213" height="773" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4967462" visible="true" weight="0.1119403" />
-      <window_info id="Structure" order="1" sideWeight="0.5032538" side_tool="true" visible="true" weight="0.1119403" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49455675" visible="true" weight="0.14088158" />
+      <window_info id="Structure" order="1" sideWeight="0.5054432" side_tool="true" visible="true" weight="0.14088158" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" />
@@ -244,12 +258,12 @@
       <window_info anchor="bottom" id="TODO" order="11" />
       <window_info anchor="bottom" id="Messages" order="12" weight="0.3281493" />
       <window_info anchor="right" id="Remote Host" order="0" />
-      <window_info anchor="right" id="SciView" order="1" weight="0.2454624" />
-      <window_info anchor="right" id="Database" order="2" />
+      <window_info anchor="right" id="SciView" order="1" weight="0.2249467" />
+      <window_info anchor="right" id="Database" order="2" weight="0.32995737" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="3" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="4" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="5" weight="0.25" />
-      <window_info active="true" anchor="right" id="Python Console" order="6" visible="true" weight="0.35714287" />
+      <window_info anchor="right" id="Python Console" order="6" visible="true" weight="0.2057044" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,8 +306,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/brinson_attribution.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="180" column="18" selection-start-line="180" selection-start-column="4" selection-end-line="180" selection-end-column="18" />
+        <state relative-caret-position="365">
+          <caret line="84" column="35" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="35" />
           <folding>
             <element signature="e#82#91#0" expanded="true" />
           </folding>
@@ -302,8 +316,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BrinsonAttribution.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="255" lean-forward="true" selection-start-line="255" selection-end-line="255" />
+        <state relative-caret-position="254">
+          <caret line="371" lean-forward="true" selection-start-line="371" selection-end-line="371" />
+          <folding>
+            <element signature="e#139#158#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

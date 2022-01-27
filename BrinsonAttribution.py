@@ -5,6 +5,8 @@
 # @Software : PyCharm
 
 import pandas as pd
+import numpy as np
+from wm.database import WindIndex
 
 
 class BrinsonAttribution:
@@ -195,7 +197,7 @@ class BrinsonAttribution:
 
     @staticmethod
     def _attribute_by_stock_position(stock_ret, stock_weight_in_pf,  stock_weight_in_bm, stock_sector, model='BF',
-                                     ir_separated=True):
+                                     ir_separated=True, out_df=False):
         """
 
         Parameters
@@ -212,7 +214,8 @@ class BrinsonAttribution:
 
         Examples
         --------
-        >>> BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector)
+        >>> sr, ar = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm,
+        stock_sector, ir_separated=False)
 
         """
         pf_sector_ret, pf_sector_weight = BrinsonAttribution.cal_pf_sector_ret_weight(stock_ret, stock_weight_in_pf,
@@ -221,7 +224,10 @@ class BrinsonAttribution:
                                                                                       stock_sector)
         pf_sector_weight = pf_sector_weight.reindex(bm_sector_weight.index).fillna(0)
         pf_sector_ret = pf_sector_ret.reindex(bm_sector_ret.index).fillna(0)
+        pf_ret = pf_sector_ret * pf_sector_weight
+        bm_ret = bm_sector_ret * bm_sector_weight
         bm_whole_ret = BrinsonAttribution.cal_bm_whole_ret(bm_sector_ret, bm_sector_weight)
+        excess_ret = pf_ret - bm_ret
         if ir_separated:
             sr = BrinsonAttribution.cal_sr(bm_sector_weight, pf_sector_ret, bm_sector_ret)
             ir = BrinsonAttribution.cal_ir(pf_sector_weight, bm_sector_weight, pf_sector_ret, bm_sector_ret)
@@ -230,7 +236,16 @@ class BrinsonAttribution:
                                                bm_index_ret=bm_whole_ret)
             else:
                 ar = BrinsonAttribution.cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret)
-            return sr, ir, ar
+            if not out_df:
+                return sr, ir, ar, pf_ret, bm_ret
+            else:
+                attr_df = pd.DataFrame([pf_sector_weight, pf_sector_ret, bm_sector_weight, bm_sector_ret, pf_ret, bm_ret,
+                                        sr, ir, ar, excess_ret]).T
+                attr_df.columns = ['pf_sector_weight', 'pf_sector_ret', 'bm_sector_weight', 'bm_sector_ret', 'pfr',
+                                   'bmr', 'sr', 'ir', 'ar', 'excess_ret']
+                attr_df.loc['合计', :] = attr_df.sum()
+                attr_df.loc['合计', ['pf_sector_ret', 'bm_sector_ret']] = np.nan
+                return attr_df
         else:
             sr = BrinsonAttribution.cal_sr_ir(pf_sector_weight, pf_sector_ret, bm_sector_ret)
             if model == "BF":
@@ -238,7 +253,17 @@ class BrinsonAttribution:
                                                bm_index_ret=bm_whole_ret)
             else:
                 ar = BrinsonAttribution.cal_ar(pf_sector_weight, bm_sector_weight, bm_sector_ret)
-            return sr, ar
+            if not out_df:
+                return sr, ar, pf_ret, bm_ret
+            else:
+                attr_df = pd.DataFrame([pf_sector_weight, pf_sector_ret, bm_sector_weight, bm_sector_ret, pf_ret, bm_ret,
+                                        sr, ar, excess_ret]).T
+                attr_df.columns = ['pf_sector_weight', 'pf_sector_ret', 'bm_sector_weight', 'bm_sector_ret', 'pfr',
+                                   'bmr', 'sr', 'ar', 'excess_ret']
+                attr_df.loc['合计', :] = attr_df.sum()
+                attr_df.loc['合计', ['pf_sector_ret', 'bm_sector_ret']] = np.nan
+                return attr_df
+
 
     @staticmethod
     def attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector, model='BF',
@@ -259,19 +284,94 @@ class BrinsonAttribution:
 
         Examples
         --------
-        >>> BrinsonAttribution.attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector)
+        >>> BrinsonAttribution.attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector,
+            ir_separated=False)
 
         """
         if ir_separated:
-            sr, ir, ar = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf,
-                                                                         stock_weight_in_bm, stock_sector, model=model,
-                                                                         ir_separated=ir_separated)
-            return {'sr': sr.sum(), 'ir': ir.sum(), 'ar': ar.sum()}
+            sr, ir, ar, pfr, bmr = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf,
+                                                                                   stock_weight_in_bm, stock_sector,
+                                                                                   model=model, ir_separated=ir_separated)
+
+            return {'sr': sr.sum(), 'ir': ir.sum(), 'ar': ar.sum(), 'pfr': pfr.sum(), 'bmr': bmr.sum()}
         else:
-            sr, ar = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf,
-                                                                     stock_weight_in_bm, stock_sector, model=model,
-                                                                     ir_separated=ir_separated)
-            return {'sr': sr, 'ar': ar}
+            sr, ar, pfr, bmr = BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf,
+                                                                               stock_weight_in_bm, stock_sector,
+                                                                               model=model, ir_separated=ir_separated)
+            return {'sr': sr.sum(), 'ar': ar.sum(), 'pfr': pfr.sum(), 'bmr': bmr.sum()}
+
+    @staticmethod
+    def gather_attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector, model='BF',
+                                           ir_separated=True):
+        """
+
+        Parameters
+        ----------
+        stock_ret
+        stock_weight_in_pf
+        stock_weight_in_bm
+        stock_sector
+        model
+        ir_separated
+
+        Returns
+        -------
+
+        Examples
+        --------
+        >>> BrinsonAttribution.attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector,
+            ir_separated=False)
+
+        """
+        return BrinsonAttribution._attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector,
+                                                                model, ir_separated, out_df=True)
+
+    # @staticmethod
+    # def attribute_in_asset_and_stock(stock_ret, stock_weight_in_pf, stock_weight_in_bm, stock_sector, model='BF',
+    #                                  ir_separated=False, stock_bm_code='000300.SH', bond_bm_code='000012.SH', freq='6M'):
+    #     attr_stock_position = BrinsonAttribution.attribute_by_stock_position(stock_ret, stock_weight_in_pf, stock_weight_in_bm,
+    #                                                                    stock_sector, model=model, ir_separated=ir_separated)
+    #
+    #     bond_bm_ret = get_index_ret(bond_bm, freq)
+    #     bond_bm_ret = bond_bm_ret.loc[brinson_stock.index]
+    #
+    #     stock_bm_ret = get_index_ret(stock_bm, freq)
+    #     stock_bm_ret = stock_bm_ret.loc[brinson_stock.index]
+    #
+    #     #    bm_ret = brinson_stock['re_b'] * asset_weight['bm_stock'] + bond_bm_ret * asset_weight['bm_bond']
+    #     bm_ret = stock_bm_ret * asset_weight['bm_stock'] + bond_bm_ret * asset_weight['bm_bond']
+    #
+    #     fund_ret = get_index_ret(fund_code, freq)
+    #     fund_ret = fund_ret.loc[brinson_stock.index]
+    #
+    #     timing_ret = (asset_weight['pt_stock'] - asset_weight['bm_stock']) * (brinson_stock['re_b'] - bm_ret) + \
+    #                  (asset_weight['pt_bond'] - asset_weight['bm_bond']) * (bond_bm_ret - bm_ret)
+    #     ind_ret = brinson_stock['配置效应(AR)'] * asset_weight['pt_stock']
+    #     select_ret = brinson_stock['选股效应(SR)'] * asset_weight['pt_stock']
+    #
+    #     res_con_timing = pd.concat([fund_ret, bm_ret, timing_ret, ind_ret, select_ret], axis=1)
+    #     res_con_timing.columns = ['基金收益', '基准实际收益', '大类资产择时收益(TR)', '配置效应(AR)', '选股效应(SR)']
+    #     res_con_timing['估计误差'] = res_con_timing['基金收益'] - res_con_timing[
+    #         ['基准实际收益', '大类资产择时收益(TR)', '配置效应(AR)', '选股效应(SR)']].sum(axis=1)
+    #     res_con_timing['是否调整'] = '调整后'
+    #
+    #     res_wo_timing = pd.concat([fund_ret, bm_ret, brinson_stock[['配置效应(AR)', '选股效应(SR)']]], axis=1)
+    #     res_wo_timing.columns = ['基金收益', '基准实际收益', '配置效应(AR)', '选股效应(SR)']
+    #     res_wo_timing['大类资产择时收益(TR)'] = np.nan
+    #     res_wo_timing['估计误差'] = res_wo_timing['基金收益'] - res_wo_timing[['基准实际收益', '配置效应(AR)', '选股效应(SR)']].sum(axis=1)
+    #     res_wo_timing['是否调整'] = '调整前'
+    #
+    #     res = pd.concat([res_con_timing, res_wo_timing], axis=0)
+    #     res.index.name = 'date'
+    #     res = res.reset_index()
+    #     res = res.set_index(['date', '是否调整'])
+    #     res = res.sort_index()
+    #     res = res[['基金收益', '基准实际收益', '大类资产择时收益(TR)',
+    #                '选股效应(SR)', '配置效应(AR)', '估计误差']]
+    #     return res
+
+
+
 
 
 

@@ -107,6 +107,7 @@ def cal_ind_ret_weight(weight, freq='6M'):
     ind_weight /= ind_weight.sum()
     return ind_return, ind_weight.T
 
+
 def brinson_attr_asset(stock_weight, asset_weight, fund_code, stock_bm='000300.SH',
                        bond_bm='000012.SH', freq='6M', version=2, verbose=False):
     brinson_stock = brinson_attr_stock(stock_weight, stock_bm, freq, version,
